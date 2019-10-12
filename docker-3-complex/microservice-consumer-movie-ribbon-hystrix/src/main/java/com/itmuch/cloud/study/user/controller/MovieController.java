@@ -3,9 +3,11 @@ package com.itmuch.cloud.study.user.controller;
 import com.google.common.collect.Maps;
 import com.itmuch.cloud.study.user.entity.User;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,16 +17,17 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+@Api(tags = "MovieController")
+@AllArgsConstructor
 @RestController
 public class MovieController {
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieController.class);
-    @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private LoadBalancerClient loadBalancerClient;
+    private final RestTemplate restTemplate;
+    private final LoadBalancerClient loadBalancerClient;
 
     @HystrixCommand(fallbackMethod = "findByIdFallback")
     @GetMapping("/user/{id}")
+    @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
     public User findById(@PathVariable Long id) {
         return this.restTemplate.getForObject("http://microservice-provider-user/" + id, User.class);
     }
@@ -37,6 +40,7 @@ public class MovieController {
     }
 
     @GetMapping("/log-user-instance")
+    @ApiOperation(value = "获取节点信息", notes = "获取节点信息")
     public Map<String, Object> logUserInstance() {
         ServiceInstance serviceInstance = this.loadBalancerClient.choose("microservice-provider-user");
         // 打印当前选择的是哪个节点

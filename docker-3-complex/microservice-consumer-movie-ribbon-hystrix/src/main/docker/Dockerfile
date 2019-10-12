@@ -3,11 +3,19 @@
 # docker build -t itmuch/microservice-consumer-movie-ribbon-hystrix:0.0.1-SNAPSHOT .
 # Run with:
 # docker run -p 8010:8010 -d --name microservice-consumer-movie-ribbon-hystrix itmuch/microservice-consumer-movie-ribbon-hystrix:0.0.1-SNAPSHOT
-FROM java:8-jre
+FROM openjdk:8-alpine
 MAINTAINER KEN
 
 ENV VERSION 0.0.1-SNAPSHOT
 ENV FINALNAME microservice-consumer-movie-ribbon-hystrix
+
+RUN echo -e "https://mirrors.aliyun.com/alpine/v3.7/main" > /etc/apk/repositories
+RUN apk update \
+        && apk upgrade \
+        && apk add --no-cache bash \
+        bash-doc \
+        bash-completion \
+        && rm -rf /var/cache/apk/*
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone
